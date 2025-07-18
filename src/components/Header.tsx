@@ -15,6 +15,7 @@ import {
   Settings,
   HelpCircle
 } from 'lucide-react';
+import MegaMenu from './MegaMenu'; // Add this import
 
 interface HeaderProps {
   currentPage: string;
@@ -27,6 +28,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  
+  // Add these new state variables for MegaMenu
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [megaMenuType, setMegaMenuType] = useState<'curriculum' | 'tools' | 'grow' | 'connect' | null>(null);
   
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -48,6 +53,8 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchOpen(false);
       }
+      // Add this line to close mega menu
+      setMegaMenuOpen(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -67,15 +74,28 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      console.log('Searching for:', searchQuery);
-      // Implement actual search functionality here
+      const searchPageName = `search-results-${searchQuery.toLowerCase().replace(/\s+/g, '-')}`;
+      setCurrentPage(searchPageName);
       setSearchOpen(false);
+    }
+  };
+
+  // Add this function to handle navigation clicks
+  const handleNavClick = (itemId: string) => {
+    if (itemId === 'curriculum' || itemId === 'tools' || itemId === 'grow' || itemId === 'connect') {
+      // Open mega menu for these items
+      setMegaMenuType(itemId as 'curriculum' | 'tools' | 'grow' | 'connect');
+      setMegaMenuOpen(true);
+    } else {
+      // Navigate normally for other items
+      setCurrentPage(itemId);
+      setMegaMenuOpen(false);
     }
   };
 
   return (
     <>
-      <header className="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm sticky top-0 z-50">
+      <header className="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm sticky top-0 z-[9999]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             
@@ -91,7 +111,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
               
               <button 
                 className="text-xl font-bold text-primary-600 hover:text-primary-700 transition-colors" 
-                onClick={() => setCurrentPage('home')}
+                onClick={() => {
+                  setCurrentPage('home');
+                  setMegaMenuOpen(false); // Close mega menu when going home
+                }}
               >
                 OECS Learning Hub
               </button>
@@ -102,11 +125,15 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setCurrentPage(item.id)}
+                  onClick={() => handleNavClick(item.id)} // Use the new handler
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center space-x-2 ${
                     currentPage === item.id 
                       ? 'text-primary-600 bg-primary-50' 
                       : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  } ${
+                    megaMenuOpen && megaMenuType === item.id
+                      ? 'text-primary-600 bg-primary-50'
+                      : ''
                   }`}
                 >
                   <item.icon size={16} />
@@ -151,7 +178,8 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
                             key={index}
                             type="button"
                             onClick={() => {
-                              setSearchQuery(suggestion);
+                              const searchPageName = `search-${suggestion.toLowerCase().replace(/\s+/g, '-')}`;
+                              setCurrentPage(searchPageName);
                               setSearchOpen(false);
                             }}
                             className="block w-full text-left text-sm text-gray-700 hover:text-primary-600 hover:bg-gray-50 px-2 py-1 rounded transition-colors"
@@ -199,7 +227,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
                         {/* Platform Access */}
                         <div className="px-2 py-2">
                           <button 
-                            onClick={() => setCurrentPage('grow')}
+                            onClick={() => {
+                              setCurrentPage('oecs-mypd');
+                              setUserMenuOpen(false);
+                            }}
                             className="w-full text-left p-3 rounded-lg hover:bg-primary-50 transition-colors"
                           >
                             <div className="flex items-center space-x-3">
@@ -214,7 +245,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
                           </button>
 
                           <button 
-                            onClick={() => setCurrentPage('connect')}
+                            onClick={() => {
+                              setCurrentPage('oecs-maker-studio');
+                              setUserMenuOpen(false);
+                            }}
                             className="w-full text-left p-3 rounded-lg hover:bg-secondary-50 transition-colors"
                           >
                             <div className="flex items-center space-x-3">
@@ -233,11 +267,23 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
                         
                         {/* Menu Items */}
                         <div className="px-2">
-                          <button className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg">
+                          <button 
+                            onClick={() => {
+                              setCurrentPage('settings');
+                              setUserMenuOpen(false);
+                            }}
+                            className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                          >
                             <Settings size={16} className="mr-3" />
                             Settings
                           </button>
-                          <button className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg">
+                          <button 
+                            onClick={() => {
+                              setCurrentPage('help-support');
+                              setUserMenuOpen(false);
+                            }}
+                            className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+                          >
                             <HelpCircle size={16} className="mr-3" />
                             Help & Support
                           </button>
@@ -254,7 +300,9 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
                   </>
                 ) : (
                   <button
-                    onClick={() => setIsLoggedIn(true)}
+                    onClick={() => {
+                      setCurrentPage('sign-in');
+                    }}
                     className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium flex items-center space-x-2"
                   >
                     <User size={16} />
@@ -273,7 +321,14 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
               
               {/* Mobile Search */}
               <div className="mb-4">
-                <form onSubmit={handleSearch}>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchQuery.trim()) {
+                    const searchPageName = `mobile-search-${searchQuery.toLowerCase().replace(/\s+/g, '-')}`;
+                    setCurrentPage(searchPageName);
+                    setMobileMenuOpen(false);
+                  }
+                }}>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input
@@ -291,7 +346,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
               {navItems.map(item => (
                 <button
                   key={item.id}
-                  onClick={() => setCurrentPage(item.id)}
+                  onClick={() => handleNavClick(item.id)} // Use the same handler
                   className={`w-full text-left px-3 py-3 text-base font-medium rounded-lg transition-colors flex items-center space-x-3 ${
                     currentPage === item.id 
                       ? 'text-primary-600 bg-primary-50' 
@@ -310,14 +365,20 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
                     Signed in as John Educator
                   </div>
                   <button 
-                    onClick={() => setCurrentPage('grow')}
+                    onClick={() => {
+                      setCurrentPage('oecs-mypd');
+                      setMobileMenuOpen(false);
+                    }}
                     className="w-full text-left px-3 py-3 text-base font-medium rounded-lg text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors flex items-center space-x-3"
                   >
                     <TrendingUp size={18} />
                     <span>OECS MyPD</span>
                   </button>
                   <button 
-                    onClick={() => setCurrentPage('connect')}
+                    onClick={() => {
+                      setCurrentPage('oecs-maker-studio');
+                      setMobileMenuOpen(false);
+                    }}
                     className="w-full text-left px-3 py-3 text-base font-medium rounded-lg text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors flex items-center space-x-3"
                   >
                     <Users size={18} />
@@ -336,6 +397,18 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
           </div>
         )}
       </header>
+
+      {/* Add the MegaMenu component here */}
+      <div className="relative">
+        {megaMenuOpen && megaMenuType && (
+          <MegaMenu
+            isOpen={megaMenuOpen}
+            onClose={() => setMegaMenuOpen(false)}
+            menuType={megaMenuType}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
+      </div>
     </>
   );
 };

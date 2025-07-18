@@ -7,33 +7,65 @@ import CurriculumPage from './pages/CurriculumPage';
 import ToolsPage from './pages/ToolsPage';
 import GrowPage from './pages/GrowPage';
 import ConnectPage from './pages/ConnectPage';
+import PlaceholderPage from './pages/PlaceholderPage';
 import './index.css';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('home');
+  const [previousPage, setPreviousPage] = useState('home');
+
+  // Define which pages actually exist
+  const existingPages = ['home', 'curriculum', 'tools', 'grow', 'connect'];
+
+  const handlePageChange = (page: string) => {
+    setPreviousPage(currentPage);
+    setCurrentPage(page);
+  };
+
+  const handleGoBack = () => {
+    setCurrentPage(previousPage);
+  };
+
+  const handleGoHome = () => {
+    setCurrentPage('home');
+  };
+
+  const formatPageName = (page: string) => {
+    return page
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <HomePage setCurrentPage={setCurrentPage} />;
+        return <HomePage setCurrentPage={handlePageChange} />;
       case 'curriculum':
-        return <CurriculumPage />;
+        return <CurriculumPage setCurrentPage={handlePageChange} />;
       case 'tools':
-        return <ToolsPage />;
+        return <ToolsPage setCurrentPage={handlePageChange} />;
       case 'grow':
-        return <GrowPage />;
+        return <GrowPage setCurrentPage={handlePageChange} />;
       case 'connect':
-        return <ConnectPage />;
+        return <ConnectPage setCurrentPage={handlePageChange} />;
       default:
-        return <HomePage setCurrentPage={setCurrentPage} />;
+        // For any page that doesn't exist, show placeholder
+        return (
+          <PlaceholderPage 
+            pageName={formatPageName(currentPage)}
+            onGoBack={handleGoBack}
+            onGoHome={handleGoHome}
+          />
+        );
     }
   };
 
   return (
     <div className="min-h-screen bg-sage-50">
-      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Header currentPage={currentPage} setCurrentPage={handlePageChange} />
       {renderCurrentPage()}
-      <Footer />
+      <Footer setCurrentPage={handlePageChange} />
     </div>
   );
 };

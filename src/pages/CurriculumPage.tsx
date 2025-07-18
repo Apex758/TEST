@@ -2,7 +2,11 @@
 import React, { useState } from 'react';
 import { Search, Play, BookOpen, ChevronRight } from 'lucide-react';
 
-const CurriculumPage = () => {
+interface CurriculumPageProps {
+  setCurrentPage?: (page: string) => void;
+}
+
+const CurriculumPage: React.FC<CurriculumPageProps> = ({ setCurrentPage }) => {
   const [selectedGrade, setSelectedGrade] = useState('3');
   const [selectedSubject, setSelectedSubject] = useState('mathematics');
 
@@ -38,12 +42,12 @@ const CurriculumPage = () => {
   ];
 
   const mathTopics = [
-    { name: '📊 Numbers & Operations', activities: 12, assessments: 5 },
-    { name: '📐 Geometry', activities: 8, assessments: 3 },
-    { name: '📈 Measurement', activities: 10, assessments: 4 },
-    { name: '🔢 Algebra & Patterns', activities: 6, assessments: 2 },
-    { name: '📋 Data Analysis', activities: 7, assessments: 3 },
-    { name: '🧮 Problem Solving', activities: 9, assessments: 4 }
+    { name: '📊 Numbers & Operations', activities: 12, assessments: 5, id: 'numbers-operations' },
+    { name: '📐 Geometry', activities: 8, assessments: 3, id: 'geometry' },
+    { name: '📈 Measurement', activities: 10, assessments: 4, id: 'measurement' },
+    { name: '🔢 Algebra & Patterns', activities: 6, assessments: 2, id: 'algebra-patterns' },
+    { name: '📋 Data Analysis', activities: 7, assessments: 3, id: 'data-analysis' },
+    { name: '🧮 Problem Solving', activities: 9, assessments: 4, id: 'problem-solving' }
   ];
 
   const activities = [
@@ -52,25 +56,28 @@ const CurriculumPage = () => {
       type: 'Interactive Game',
       duration: '30 min',
       difficulty: 'Beginner',
-      description: 'Help students understand place value with engaging visual activities.'
+      description: 'Help students understand place value with engaging visual activities.',
+      id: 'place-value-fun'
     },
     { 
       name: 'Addition Games', 
       type: 'Digital Activity',
       duration: '45 min',
       difficulty: 'Intermediate',
-      description: 'Interactive addition exercises with immediate feedback and rewards.'
+      description: 'Interactive addition exercises with immediate feedback and rewards.',
+      id: 'addition-games'
     },
     { 
       name: 'Word Problems', 
       type: 'Practice Set',
       duration: '25 min',
       difficulty: 'Advanced',
-      description: 'Real-world math problems to develop critical thinking skills.'
+      description: 'Real-world math problems to develop critical thinking skills.',
+      id: 'word-problems'
     }
   ];
 
-  const getDifficultyColor = (difficulty) => {
+  const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner': return 'bg-green-100 text-green-800';
       case 'Intermediate': return 'bg-yellow-100 text-yellow-800';
@@ -79,14 +86,36 @@ const CurriculumPage = () => {
     }
   };
 
+  const handleTopicClick = (topicId: string) => {
+    if (setCurrentPage) {
+      setCurrentPage(`curriculum-${selectedSubject}-grade-${selectedGrade}-${topicId}`);
+    }
+  };
+
+  const handleActivityClick = (activityId: string, action: string) => {
+    if (setCurrentPage) {
+      setCurrentPage(`${action}-${selectedSubject}-grade-${selectedGrade}-${activityId}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-600 mb-6 flex items-center">
-          <span className="hover:text-blue-600 cursor-pointer">Home</span>
+          <button 
+            onClick={() => setCurrentPage && setCurrentPage('home')}
+            className="hover:text-blue-600 cursor-pointer"
+          >
+            Home
+          </button>
           <ChevronRight size={16} className="mx-2" />
-          <span className="hover:text-blue-600 cursor-pointer">Curriculum</span>
+          <button 
+            onClick={() => setCurrentPage && setCurrentPage('curriculum')}
+            className="hover:text-blue-600 cursor-pointer"
+          >
+            Curriculum
+          </button>
           <ChevronRight size={16} className="mx-2" />
           <span className="text-blue-600 font-semibold">
             {subjects.find(s => s.id === selectedSubject)?.name}
@@ -159,7 +188,10 @@ const CurriculumPage = () => {
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+              <button 
+                onClick={() => setCurrentPage && setCurrentPage('my-saved-curriculum')}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+              >
                 📁 My Saved
               </button>
             </div>
@@ -171,6 +203,7 @@ const CurriculumPage = () => {
               <div 
                 key={index} 
                 className="p-6 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-all duration-300 hover:shadow-md group"
+                onClick={() => handleTopicClick(topic.id)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
@@ -198,16 +231,28 @@ const CurriculumPage = () => {
             </div>
             
             <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-              <button className="px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition-colors">
+              <button 
+                onClick={() => setCurrentPage && setCurrentPage(`learning-outcomes-${selectedSubject}-grade-${selectedGrade}`)}
+                className="px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition-colors"
+              >
                 🎯 Learning Outcomes
               </button>
-              <button className="px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors">
+              <button 
+                onClick={() => setCurrentPage && setCurrentPage(`activities-${selectedSubject}-grade-${selectedGrade}`)}
+                className="px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors"
+              >
                 📋 Activities
               </button>
-              <button className="px-4 py-2 bg-purple-100 text-purple-800 rounded-md hover:bg-purple-200 transition-colors">
+              <button 
+                onClick={() => setCurrentPage && setCurrentPage(`assessments-${selectedSubject}-grade-${selectedGrade}`)}
+                className="px-4 py-2 bg-purple-100 text-purple-800 rounded-md hover:bg-purple-200 transition-colors"
+              >
                 📊 Assessments
               </button>
-              <button className="px-4 py-2 bg-orange-100 text-orange-800 rounded-md hover:bg-orange-200 transition-colors">
+              <button 
+                onClick={() => setCurrentPage && setCurrentPage(`resources-${selectedSubject}-grade-${selectedGrade}`)}
+                className="px-4 py-2 bg-orange-100 text-orange-800 rounded-md hover:bg-orange-200 transition-colors"
+              >
                 📚 Resources
               </button>
             </div>
@@ -244,13 +289,22 @@ const CurriculumPage = () => {
                   </div>
                   
                   <div className="flex space-x-3">
-                    <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
+                    <button 
+                      onClick={() => handleActivityClick(activity.id, 'preview')}
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                    >
                       Preview
                     </button>
-                    <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    <button 
+                      onClick={() => handleActivityClick(activity.id, 'use')}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
                       Use Now
                     </button>
-                    <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                    <button 
+                      onClick={() => handleActivityClick(activity.id, 'save')}
+                      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                    >
                       Save
                     </button>
                   </div>
@@ -261,7 +315,10 @@ const CurriculumPage = () => {
 
           {/* Load More */}
           <div className="text-center mt-8">
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+            <button 
+              onClick={() => setCurrentPage && setCurrentPage(`more-activities-${selectedSubject}-grade-${selectedGrade}`)}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            >
               Load More Activities
             </button>
           </div>

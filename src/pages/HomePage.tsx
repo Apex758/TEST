@@ -29,14 +29,14 @@ const HomePage = ({ setCurrentPage }) => {
     { 
       title: 'AI Preview', 
       subtitle: '▶️ Demo Videos', 
-      action: () => setCurrentPage('tools'),
+      action: () => setCurrentPage('ai-demo'),
       icon: '🤖',
       color: 'bg-purple-50 hover:bg-purple-100 border-purple-200'
     },
     { 
       title: 'Start Here', 
       subtitle: 'Getting Started', 
-      action: () => setCurrentPage('grow'),
+      action: () => setCurrentPage('getting-started'),
       icon: '🚀',
       color: 'bg-orange-50 hover:bg-orange-100 border-orange-200'
     }
@@ -47,37 +47,43 @@ const HomePage = ({ setCurrentPage }) => {
       icon: <Zap className="text-yellow-500" size={32} />,
       title: "AI-Powered Tools",
       description: "Create lessons in minutes with our intelligent AI assistants",
-      stat: "10x Faster"
+      stat: "10x Faster",
+      action: () => setCurrentPage('ai-tools-overview')
     },
     {
       icon: <Users className="text-blue-500" size={32} />,
       title: "Active Community",
       description: "Join 50,000+ educators sharing resources and ideas",
-      stat: "50K+ Users"
+      stat: "50K+ Users",
+      action: () => setCurrentPage('community')
     },
     {
       icon: <Award className="text-green-500" size={32} />,
       title: "Proven Results",
       description: "95% of teachers report improved student engagement",
-      stat: "95% Success"
+      stat: "95% Success",
+      action: () => setCurrentPage('success-stories')
     },
     {
       icon: <Globe className="text-purple-500" size={32} />,
       title: "Global Reach",
       description: "Supporting education across the Caribbean region",
-      stat: "15+ Countries"
+      stat: "15+ Countries",
+      action: () => setCurrentPage('global-impact')
     },
     {
       icon: <Book className="text-red-500" size={32} />,
       title: "Rich Content",
       description: "Access thousands of curriculum-aligned resources",
-      stat: "10K+ Resources"
+      stat: "10K+ Resources",
+      action: () => setCurrentPage('content-library')
     },
     {
       icon: <Star className="text-indigo-500" size={32} />,
       title: "Expert Approved",
       description: "Content reviewed by educational specialists",
-      stat: "Expert Verified"
+      stat: "Expert Verified",
+      action: () => setCurrentPage('expert-reviews')
     }
   ];
 
@@ -130,7 +136,10 @@ const HomePage = ({ setCurrentPage }) => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
+            <button 
+              className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center"
+              onClick={() => setCurrentPage('platform-tour')}
+            >
               <Play className="mr-2 group-hover:scale-110 transition-transform" size={20} />
               Take Platform Tour
             </button>
@@ -177,7 +186,8 @@ const HomePage = ({ setCurrentPage }) => {
             {marqueeCards.map((card, index) => (
               <div 
                 key={`first-${index}`}
-                className="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                onClick={card.action}
               >
                 <div className="flex items-center justify-between mb-4">
                   {card.icon}
@@ -193,7 +203,8 @@ const HomePage = ({ setCurrentPage }) => {
             {marqueeCards.map((card, index) => (
               <div 
                 key={`second-${index}`}
-                className="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="flex-shrink-0 w-80 bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                onClick={card.action}
               >
                 <div className="flex items-center justify-between mb-4">
                   {card.icon}
@@ -242,19 +253,31 @@ const HomePage = ({ setCurrentPage }) => {
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
+            <div 
+              className="cursor-pointer hover:scale-105 transition-transform" 
+              onClick={() => setCurrentPage('teacher-stats')}
+            >
               <div className="text-4xl md:text-5xl font-bold mb-2">50K+</div>
               <div className="text-blue-200">Active Teachers</div>
             </div>
-            <div>
+            <div 
+              className="cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => setCurrentPage('student-impact')}
+            >
               <div className="text-4xl md:text-5xl font-bold mb-2">1M+</div>
               <div className="text-blue-200">Students Reached</div>
             </div>
-            <div>
+            <div 
+              className="cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => setCurrentPage('resource-library')}
+            >
               <div className="text-4xl md:text-5xl font-bold mb-2">10K+</div>
               <div className="text-blue-200">Resources</div>
             </div>
-            <div>
+            <div 
+              className="cursor-pointer hover:scale-105 transition-transform"
+              onClick={() => setCurrentPage('global-reach')}
+            >
               <div className="text-4xl md:text-5xl font-bold mb-2">15+</div>
               <div className="text-blue-200">Countries</div>
             </div>
